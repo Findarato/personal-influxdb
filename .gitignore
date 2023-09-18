@@ -134,3 +134,5 @@ dmypy.json
 *.sqlite
 *.code-workspace
 .vscode
+
+config-dev.py
