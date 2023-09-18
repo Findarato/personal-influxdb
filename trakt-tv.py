@@ -52,18 +52,20 @@ Trakt.configuration.defaults.client(
 	secret=TRAKT_CLIENT_SECRET
 )
 
-if not os.path.exists(".trakt.json"):
+script_dir = os.path.dirname(__file__)
+oauth_config_file = os.path.join(script_dir, '.trakt.json')
+if not os.path.exists(oauth_config_file):
 	auth = Trakt['oauth'].token_exchange(TRAKT_OAUTH_CODE, 'urn:ietf:wg:oauth:2.0:oob')
-	with open('.trakt.json', 'w') as outfile:
+	with open(oauth_config_file, 'w') as outfile:
 		json.dump(auth, outfile)
 else:
-	with open('.trakt.json') as json_file:
+	with open(oauth_config_file) as json_file:
 		auth = json.load(json_file)
 
 Trakt.configuration.defaults.oauth.from_response(auth)
 
 for item in Trakt['sync/history'].get(pagination=True, per_page=100, start_at=datetime(date.today().year, date.today().month, 1), extended='full'):
-	if item.action == "watch":
+	if item.action == "watch" or item.action == "scrobble":
 		if isinstance(item, Episode):
 			if not item.show.get_key('tmdb') in posters:
 				posters[item.show.get_key('tmdb')] = fetch_poster('tv', item.show.get_key('tmdb'))
