@@ -136,4 +136,5 @@ dmypy.json
 .vscode
 
 config-dev.py
+config_dev.py
 .librelinkup-authtoken

@@ -19,7 +19,8 @@ import json
 from datetime import datetime
 from bs4 import BeautifulSoup
 from urllib.parse import urljoin, urlparse
-from config_dev import *
+#from config_dev import *
+from config import *
 
 
 if not EXOPHASE_NAME:
