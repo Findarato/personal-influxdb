@@ -19,7 +19,7 @@ import json
 from datetime import datetime
 from bs4 import BeautifulSoup
 from urllib.parse import urljoin, urlparse
-from config import *
+from config_dev import *
 
 
 if not EXOPHASE_NAME:
@@ -111,12 +111,22 @@ totals = client.query(
     f'SELECT last("total") AS "total" FROM "time" WHERE "platform" = \'PSN\' AND "total" > 0 AND "player_id" = \'{PLAYERID}\' GROUP BY "application_id" ORDER BY "time" DESC')
 
 for game in scrape_latest_games('psn'):
-    value = game['playtime']
+
+    play_time = game['playtime']
     total = list(totals.get_points(
         tags={'application_id': str(game['gameid'])}))
-    if len(total) == 1 and total[0]['total'] > 0:
-        value = game['playtime'] - total[0]['total']
-    if value > 1:
+
+
+    # if len(total) == 1 and total[0]['total'] > 0:
+    #     play_time = game['playtime'] - total[0]['total']
+
+    # if total[0]['total'] > 0:
+    #     play_time = game['playtime'] - total[0]['total']
+
+    # print(game['playtime'])
+    # sys.exit()
+
+    if game['playtime'] > 1:
         points.append({
             "measurement": "time",
             "time": game['time'].isoformat(),
@@ -128,7 +138,7 @@ for game in scrape_latest_games('psn'):
                 "title": game['title'],
             },
             "fields": {
-                "value": int(value) * 60,
+                "value": int(play_time),
                 "total": game['playtime'],
                 "image": game['image'],
                 "url": game['url']
@@ -154,6 +164,10 @@ for game in scrape_latest_games('psn'):
                 "icon_gray": achievement['image'],
             }
         })
+
+# json_formatted_str = json.dumps(points, indent=2)
+
+# print(json_formatted_str)
 
 # print(points)
 write_points(points)
